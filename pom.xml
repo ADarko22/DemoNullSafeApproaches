@@ -20,6 +20,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
+
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -48,7 +49,40 @@
           <version>3.9.0</version>
         </plugin>
 
-        <!-- SpotBugs Plugin -->
+        <!-- Spotless Plugin: Code formatting -->
+        <!-- mvn spotless:apply -->
+        <!-- mvn spotless:check -->
+        <!-- https://github.com/diffplug/spotless/tree/main/plugin-maven -->
+        <plugin>
+          <groupId>com.diffplug.spotless</groupId>
+          <artifactId>spotless-maven-plugin</artifactId>
+          <version>2.44.0</version>
+          <executions>
+            <execution>
+              <goals>
+                <goal>apply</goal>
+              </goals>
+            </execution>
+          </executions>
+          <configuration>
+            <java>
+              <includes>
+                <include>src/main/java/**/*.java</include>
+                <include>src/test/java/**/*.java</include>
+                <include>target/generated-sources/openapi/src/main/java/**/*.java</include>
+              </includes>
+              <googleJavaFormat>
+                <style>GOOGLE</style>
+              </googleJavaFormat>
+              <!-- standard import order -->
+              <importOrder/>
+              <removeUnusedImports/>
+              <formatAnnotations/>
+            </java>
+          </configuration>
+        </plugin>
+
+        <!-- SpotBugs Plugin: Report bugs -->
         <!-- mvn clean compile spotbugs:spotbugs -->
         <!-- https://spotbugs.github.io/spotbugs-maven-plugin/usage.html -->
         <!-- https://github.com/find-sec-bugs/find-sec-bugs/wiki/Maven-configuration -->
