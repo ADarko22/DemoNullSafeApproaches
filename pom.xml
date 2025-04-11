@@ -20,7 +20,6 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
   </properties>
 
-
   <dependencyManagement>
     <dependencies>
       <dependency>
@@ -61,11 +60,14 @@
             <execution>
               <goals>
                 <goal>apply</goal>
+                <goal>check</goal>
               </goals>
+              <phase>install</phase>
             </execution>
           </executions>
           <configuration>
             <java>
+              <cleanthat/>
               <includes>
                 <include>src/main/java/**/*.java</include>
                 <include>src/test/java/**/*.java</include>
@@ -95,7 +97,7 @@
               <plugin>
                 <groupId>com.h3xstream.findsecbugs</groupId>
                 <artifactId>findsecbugs-plugin</artifactId>
-                <version>1.12.0</version>
+                <version>1.13.0</version>
               </plugin>
             </plugins>
             <failOnError>true</failOnError> <!-- Fail the build if bugs are found -->

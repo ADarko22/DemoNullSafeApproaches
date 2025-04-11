@@ -36,14 +36,14 @@
     <dependency>
       <groupId>org.openapitools</groupId>
       <artifactId>jackson-databind-nullable</artifactId>
-      <version>0.2.6</version> <!-- or latest -->
+      <version>0.2.6</version>
     </dependency>
 
     <!-- Swagger/OpenAPI Annotations -->
     <dependency>
       <groupId>io.swagger.core.v3</groupId>
       <artifactId>swagger-annotations</artifactId>
-      <version>2.2.15</version> <!-- Use latest stable -->
+      <version>2.2.15</version>
     </dependency>
 
     <!-- Jakarta Bean Validation (for Java 17+) -->
@@ -53,7 +53,6 @@
       <version>3.0.2</version>
     </dependency>
   </dependencies>
-
 
   <build>
     <plugins>
@@ -77,6 +76,7 @@
               <apiPackage>edu.adarko22.api</apiPackage>
               <modelPackage>edu.adarko22.model</modelPackage>
               <invokerPackage>edu.adarko22.invoker</invokerPackage>
+
               <configOptions>
                 <dateLibrary>java8</dateLibrary>
                 <interfaceOnly>true</interfaceOnly>
@@ -84,10 +84,11 @@
                 <nullableAnnotation>true</nullableAnnotation>
                 <useNullable>true</useNullable>
                 <additionalProperties>
-                  <useBeanValidation>true</useBeanValidation> <!-- This uses JSR-303/JSR-380 annotations like @NotNull -->
+                  <useBeanValidation>true</useBeanValidation> <!-- This uses JSR-303/JSR-380 annotations like @Nonnull -->
                   <nullSafeAdditionalProps>true</nullSafeAdditionalProps>
                 </additionalProperties>
               </configOptions>
+
               <!-- Custom templates directory: https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin#custom-generator -->
               <templateDirectory>${project.basedir}/src/main/resources/openapi/templates</templateDirectory>
               <output>${project.build.directory}/generated-sources/openapi</output>
@@ -115,6 +116,18 @@
             </configuration>
           </execution>
         </executions>
+      </plugin>
+
+      <!-- Apply Spotbugs Plugin -->
+      <plugin>
+        <groupId>com.github.spotbugs</groupId>
+        <artifactId>spotbugs-maven-plugin</artifactId>
+      </plugin>
+
+      <!-- Apply Spotless Plugin -->
+      <plugin>
+        <groupId>com.diffplug.spotless</groupId>
+        <artifactId>spotless-maven-plugin</artifactId>
       </plugin>
     </plugins>
   </build>

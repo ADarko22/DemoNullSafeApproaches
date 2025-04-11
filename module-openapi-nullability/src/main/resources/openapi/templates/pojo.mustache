@@ -114,7 +114,7 @@ public {{>sealed}}class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}
         /**
         * Constructor with only required parameters{{#generateConstructorWithAllArgs}}{{^vendorExtensions.x-java-all-args-constructor}} and all parameters{{/vendorExtensions.x-java-all-args-constructor}}{{/generateConstructorWithAllArgs}}
         */
-        public {{classname}}({{#requiredVars}}{{#useBeanValidation}}@NotNull {{/useBeanValidation}}{{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}{{/requiredVars}}) {
+        public {{classname}}({{#requiredVars}}{{#useBeanValidation}}@jakarta.annotation.Nonnull {{/useBeanValidation}}{{{datatypeWithEnum}}} {{name}}{{^-last}}, {{/-last}}{{/requiredVars}}) {
         {{#parent}}
           super({{#parentRequiredVars}}{{name}}{{^-last}}, {{/-last}}{{/parentRequiredVars}});
         {{/parent}}
@@ -230,7 +230,7 @@ public {{>sealed}}class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}
         {{>beanValidation}}
       {{/useBeanValidation}}
       {{^useBeanValidation}}
-        {{#required}}@NotNull{{/required}}
+        {{#required}}@jakarta.annotation.Nonnull{{/required}}
       {{/useBeanValidation}}
       {{#swagger2AnnotationLibrary}}
         @Schema(name = "{{{baseName}}}"{{#isReadOnly}}, accessMode = Schema.AccessMode.READ_ONLY{{/isReadOnly}}{{#example}}, example = "{{{.}}}"{{/example}}{{#description}}, description = "{{{.}}}"{{/description}}{{#deprecated}}, deprecated = true{{/deprecated}}, requiredMode = {{#required}}Schema.RequiredMode.REQUIRED{{/required}}{{^required}}Schema.RequiredMode.NOT_REQUIRED{{/required}})
@@ -273,7 +273,7 @@ public {{>sealed}}class {{classname}}{{#parent}} extends {{{parent}}}{{/parent}}
       {{#deprecated}}
         @Deprecated
       {{/deprecated}}
-      public void {{setter}}({{#useBeanValidation}}{{#required}}@NotNull {{/required}}{{/useBeanValidation}}{{>nullableDataType}} {{name}}) {
+      public void {{setter}}({{#useBeanValidation}}{{#required}}@jakarta.annotation.Nonnull {{/required}}{{/useBeanValidation}}{{>nullableDataType}} {{name}}) {
       this.{{name}} = {{name}};
       }
     {{/lombok.Setter}}
