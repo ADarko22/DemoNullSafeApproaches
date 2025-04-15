@@ -29,7 +29,7 @@
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter-web</artifactId>
-      <version>3.3.10</version>
+      <version>2.7.18</version> <!-- Compatible with Javax -->
     </dependency>
 
     <!-- OpenAPI Tools -->
@@ -46,11 +46,11 @@
       <version>2.2.15</version>
     </dependency>
 
-    <!-- Jakarta Bean Validation (for Java 17+) -->
+    <!-- Javax Bean Validation - compatible with Spotbugs Plugin -->
     <dependency>
-      <groupId>jakarta.validation</groupId>
-      <artifactId>jakarta.validation-api</artifactId>
-      <version>3.0.2</version>
+      <groupId>javax.validation</groupId>
+      <artifactId>validation-api</artifactId>
+      <version>2.0.1.Final</version>
     </dependency>
   </dependencies>
 
@@ -80,7 +80,6 @@
               <configOptions>
                 <dateLibrary>java8</dateLibrary>
                 <interfaceOnly>true</interfaceOnly>
-                <useJakartaEe>true</useJakartaEe>
                 <nullableAnnotation>true</nullableAnnotation>
                 <useNullable>true</useNullable>
                 <additionalProperties>
