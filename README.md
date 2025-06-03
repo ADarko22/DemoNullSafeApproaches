@@ -1,18 +1,16 @@
 # Null Safety Demo in Maven Project
 
-This project demonstrates different scenarios for using **Null Safety** in a Maven-based Java project. The project contains three modules, each illustrating different aspects of
-Null Safety:
+This project demonstrates different scenarios for using **Null Safety** in a Maven-based Java project. The project contains modules illustrating different aspects of Null Safety:
 
-1. **module-nullability** - Demonstrating the usage of `@javax.annotation.ParametersAreNonnullByDefault` and how **SpotBugs** detects nullable annotations.
-2. **module-openapi-nullability** - Demonstrating how **Swagger**-generated classes handle nullability, and how **SpotBugs** detects missing nullable annotations in optional
-   fields.
-3. **module-thymeleaf-nullability** - Checking if **Thymeleaf** templates properly handle nullable properties without proper null checking.
+1. **module-nullability** - Demonstrates the usage of `@javax.annotation.ParametersAreNonnullByDefault` and **SpotBugs** detection of violations.
+2. **module-openapi-nullability** - Demonstrates how **Swagger**-generated classes handle nullability and  **SpotBugs** detection of violations.
 
 ---
 
 ## The Spotbugs Plugin
 
-The [SpotBugs](https://spotbugs.github.io/) tool integrated as Maven Plugin allows to generate a report with vulnerability violations.
+The [SpotBugs](https://spotbugs.github.io/) tool integrated as Maven Plugin allows to fail the build on bugs and vulnerabilities, and to generate a report with vulnerability
+violations.
 
 ```
 <plugin>
@@ -24,12 +22,83 @@ The [SpotBugs](https://spotbugs.github.io/) tool integrated as Maven Plugin allo
 
 ### Nullability Violations
 
-The tool integrates with Nullability annotations from Javax/Jakarta and includes in the generated report Nullability Violations.
+The tool integrates with Nullability annotations from `Javax`/`Jakarta` and includes in the generated report Nullability Violations.
+
 This Demo exploits such a feature to encourage the use of Nullability annotations.
+
+### Enforcing Checks during Development
+
+The SpotBugs plugin can be configured to run during the Maven build process and fail based on the severity of the issues found:
+
+```xml
+
+<plugin>
+    <groupId>com.github.spotbugs</groupId>
+    <artifactId>spotbugs-maven-plugin</artifactId>
+    <executions>
+        <!-- Always generate report -->
+        <execution>
+            <id>spotbugs-report</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>spotbugs</goal>
+            </goals>
+        </execution>
+        <!-- Fail when verifying -->
+        <execution>
+            <id>spotbugs-check</id>
+            <phase>verify</phase>
+            <goals>
+                <goal>check</goal>
+            </goals>
+            <configuration>
+                <failOnError>true</failOnError>
+                <threshold>high</threshold>
+                <effort>Max</effort>
+            </configuration>
+        </execution>
+    </executions>
+</plugin>
+```
+
+#### Usage
+
+```bash
+mvn -fae clean verify
+```
+
+### Extend to Detect Security Vulnerabilities
+
+The SpotBugs plugin can
+be [extended to detect security vulnerabilities](https://spotbugs.readthedocs.io/en/latest/maven.html#integrate-find-security-bugs-into-spotbugs-maven-plugin) with:
+
+```xml
+
+<configuration>
+    <plugins>
+        <plugin>
+            <groupId>com.h3xstream.findsecbugs</groupId>
+            <artifactId>findsecbugs-plugin</artifactId>
+            <version>1.13.0</version>
+        </plugin>
+    </plugins>
+</configuration>
+```
 
 ### Enforcing Bug and Vulnerability Checks in CI/CD
 
-The spotbugs report can be analysed in a CI/CD step to prevent merging potential bugs, like Null Pointer Exceptions and Security Bugs.
+The spotbugs report can be analysed in a CI/CD step to prevent merging potential bugs, or displayed in a dashboard for awareness.
+
+Many CI/CD tools support integration with SpotBugs, allowing you to upload reports and annotate pull requests with findings.
+
+- **GitHub Actions:** Use the `actions/upload-artifact` to store SpotBugs XML/HTML reports, and third-party actions to annotate pull requests with findings.
+    - [jwgmeligmeyling/spotbugs-github-action](https://github.com/jwgmeligmeyling/spotbugs-github-action)
+- **GitLab CI:** Upload SpotBugs reports as job artifacts and use the JUnit or Code Quality report features for integration.
+    - [Import Code Quality results from a CI/CD job](https://docs.gitlab.com/ci/testing/code_quality/#import-code-quality-results-from-a-cicd-job)
+    - [Static Application Security Testing (SAST)](https://docs.gitlab.com/user/application_security/sast/)
+- **SonarQube:** Import SpotBugs results for advanced dashboards, history, and code quality gates.
+    - [External Analyzer Reports - Importing reports from third-party tools](https://docs.sonarsource.com/sonarqube-server/10.3/analyzing-source-code/importing-external-issues/external-analyzer-reports/)
+    - [sonar-findbugs plugin](https://github.com/spotbugs/sonar-findbugs)
 
 ---
 
@@ -38,55 +107,10 @@ The spotbugs report can be analysed in a CI/CD step to prevent merging potential
 This Maven-based project serves as a demonstration of various **null safety** techniques and how static analysis tools, like **SpotBugs**, can help detect potential issues in Java
 code.
 
-In this project, we focus on:
-
-- **Annotations** like `@ParametersAreNonnullByDefault` and nullable attributes.
-- **Code analysis tools** like SpotBugs to detect issues related to nullability.
-- **Auto-generated code**, such as Swagger-generated classes and Thymeleaf templates, and how they should adhere to null safety practices.
-
 ### module-nullability
 
-This module shows the spotbugs report generated when running `mvn clean verigy site`:
-
-1. The [package-info.java](module-nullability/src/main/java/edu/adarko22/package-info.java) is configured to enforce the annotation `@ParametersAreNonnullByDefault`.
-2. The [NullabilityExample.java](module-nullability/src/main/java/edu/adarko22/NullabilityExample.java) violates this enforcement.
-3. The generated report [spotbugsXml.xml](module-nullability/target/spotbugsXml.xml) reports the violation. Note that the IDE may also highlight it!
+See [README.md](module-nullability/README.md) for details on how to use the SpotBugs plugin to detect nullability violations in Java code.
 
 ### module-openapi-nullability
 
-The [openapi-generator-maven-plugin](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin)
-can be configured to generate Nullability annotations by configuring the plugin and using the attributes according to following the good practices.
-
-#### Good Practices
-
-1. Use `required` on parameters and properties of OpenAPI defined in the openapi.yaml file
-
-2. Use OpenAPI 3.1
-    - OpenAPI 3.1 uses JSON Schema 2020-12 which supports `nullable` more cleanly as:
-       ```
-       type: [string, 'null']
-       ```
-3. Use Additional Properties
-    - `useBeanValidation = true`
-    - `nullSafeAdditionalProps = true`
-    - `useLombokAnnotations = true`
-
-#### Altering Templates to enforce Null Safety
-
-The above good practices may not be enough to generate _Null Safe APIs_, for example autogenerated _Pojos_ may miss `@Nonnull` annotations.
-Fortunately, OpenAPI allows to [specify desired templates](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator-maven-plugin#custom-generator)
-for the autogenerated code. It requires to configure the `templateDirectory` and provide the desired templates:
-
-- [licenseInfo.mustache](module-openapi-nullability/sr[model.mustache](module-openapi-nullability/src/main/resources/openapi/templates/model.mustache)c/main/resources/openapi/templates/licenseInfo.mustache):
-  required to use the templates from [OpenAPITools](https://github.com/OpenAPITools/openapi-generator/tree/master/modules/openapi-generator/src/main/resources/JavaSpring).
-- [pojo.mustache](module-openapi-nullability/src/main/resources/openapi/templates/pojo.mustache): the updated template to generate _Pojos_ with:
-  - `@javax.annotation.Nonnull` annotations on required parameters in setters (line 274) and constructors (line 115), for required properties
-  - _fluent-style setters_ only for non-required (optional) properties (line 157)
-  - _no-argument constructor_ only when there are no required properties (line 103)
-- [beanValidation.mustache](module-openapi-nullability/src/main/resources/openapi/templates/beanValidation.mustache)
-  - Updated to use `@javax.annotation.Nonnull` annotations
-
-Reference to the [default templates for Java Spring](https://github.com/OpenAPITools/openapi-generator/tree/a94b8f90ca764342965d9b4bbd91e73d36df80c8/modules/openapi-generator/src/main/resources/JavaSpring).
-
-Note that as of April 2025 [Spotbugs donesn't support Jakarta yet](https://github.com/spotbugs/spotbugs/pull/3156). 
-For such a reason it doesn't support Spring Boot 3.x and the mustache files are using Javax annotations instead of Jakarta!
+See [README.md](module-openapi-nullability/README.md) for details on how to use the SpotBugs plugin to detect nullability violations in Swagger-generated classes.
